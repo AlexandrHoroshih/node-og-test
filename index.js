@@ -1,18 +1,37 @@
-import { unstable_createNodejsStream } from '@vercel/og';
-import { createServer } from 'node:http';
-import { pipeline } from 'node:stream';
-import { createIntlSegmenterPolyfill } from 'intl-segmenter-polyfill';
+import { unstable_createNodejsStream } from "@vercel/og";
+import Fastify from "fastify";
+import { createIntlSegmenterPolyfill } from "intl-segmenter-polyfill/dist/bundled.js";
 
-Intl.Segmenter = await createIntlSegmenterPolyfill();
+if (!Intl.Segmenter) {
+  Intl.Segmenter = await createIntlSegmenterPolyfill();
+}
+
+const fastify = Fastify({
+  logger: true,
+});
+
+fastify.get("/", async function (request, reply) {
+  const ogStream = await renderOg();
+  return reply.send(ogStream);
+});
+
+// Run the server!
+fastify.listen({ port: 3000 }, function (err, address) {
+  if (err) {
+    fastify.log.error(err);
+    process.exit(1);
+  }
+  // Server is now listening on ${address}
+});
 
 async function renderOg() {
   const ogStream = await unstable_createNodejsStream(
     {
-      type: 'div',
+      type: "div",
       props: {
-        children: 'haha',
-        styles: {
-          color: 'red',
+        children: "haha",
+        style: {
+          color: "red",
         },
       },
     },
@@ -24,12 +43,3 @@ async function renderOg() {
 
   return ogStream;
 }
-
-const ogServer = createServer(async (_req, res) => {
-  const ogStream = await renderOg();
-  pipeline(ogStream, res);
-  res.writeHead(200);
-});
-
-ogServer.listen(3000);
-console.log('og at 3000');
