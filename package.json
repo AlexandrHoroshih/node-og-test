@@ -1,0 +1,16 @@
+{
+  "name": "node-starter",
+  "type": "module",
+  "version": "0.0.0",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@babel/runtime": "^7.21.0",
+    "@vercel/og": "^0.4.0",
+    "fastify": "^4.14.1"
+  },
+  "devDependencies": {
+    "intl-segmenter-polyfill": "^0.4.4"
+  }
+}
